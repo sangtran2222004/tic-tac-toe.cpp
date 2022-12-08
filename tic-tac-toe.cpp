@@ -1,11 +1,11 @@
-// tictactoe.cpp: implement AI engine for tictactoe game
+// tictactoe.cpp: implement AI engine for tic-tac-toe game
 #include <iostream>
 #include <vector>
 using namespace std;
 
 typedef vector<vector<char> > State;
 const int SIZE = 3;
-
+// print the board's state.
 void renderGame(State state)
 {
     cout << " -------------" << endl;
@@ -16,7 +16,7 @@ void renderGame(State state)
         cout << " |" << endl << " -------------" << endl;
     }
 }
-
+// recognize next player.
 char getNextPlayer(State s)
 {
     int countX = 0, countO = 0;
@@ -29,7 +29,7 @@ char getNextPlayer(State s)
     if (countX == countO) return 'X';
     else return 'O';
 }
-
+// play
 State play(State s, int i, int j, char player)
 {
     State newState = State(3, vector<char>(3, ' '));
@@ -41,7 +41,7 @@ State play(State s, int i, int j, char player)
     newState[i][j] = player;
     return newState;
 }
-
+// get next state of the board;
 vector<State> getNextStates(State s)
 {
     char nextPlayer = getNextPlayer(s);
@@ -56,7 +56,7 @@ vector<State> getNextStates(State s)
     }
     return states;
 }
-
+// check if the game is done or not.
 bool isFinalState(State s)
 {
     // check rows
@@ -76,7 +76,7 @@ bool isFinalState(State s)
     }
     return true;
 }
-
+// count the score of each player
 int getScoreFinalState(State s)
 {
     // check rows
@@ -93,7 +93,7 @@ int getScoreFinalState(State s)
         return s[0][2] == 'X' ? 1 : -1;;
     return 0;
 }
-
+// calculate the score.
 pair<int, State> getScore(State s)
 {
     if (isFinalState(s)) {
@@ -120,8 +120,8 @@ pair<int, State> getScore(State s)
     }
     return make_pair(bestScore, bestState);
 }
-
-pair<int, int> getComputerPlay(State s)
+// get computer's move
+pair<int, int> getComputerMove(State s)
 {
     pair<int, State> p = getScore(s);
     int score = p.first;
@@ -139,19 +139,32 @@ int main()
     State s = State(3, vector<char>(3, ' '));
     char humanPlayer = ' ', currentPlayer = 'X';
     cout << "Choose your player (X or O): ";
-    cin >> humanPlayer;
+    while(cin >> humanPlayer)
+    {
+        if(humanPlayer!='X' && humanPlayer!='O')
+        {
+            cout<<"You could only use X or O character. Please choose again"<<endl;
+        }
+        else break;
+    }
     cout << "You are " << humanPlayer << " player" << endl;
 
     renderGame(s);
     while (true) {
         int i = -1, j = -1;
         if (humanPlayer == currentPlayer) {
-            cout << "Enter your play: ";
-            cin >> i >> j;
-            cout << "You play (" << i << ", " << j << endl;
-            // TODO check legal move
+            cout << "Enter your move: ";
+            while(cin >> i >> j)
+            {
+                if(i>2 || j>2) cout<<"Invalid move. Your move must be smaller than 3. Enter your move again"<<endl;
+                else if(i<0 || j<0) cout<<"Invalid move. Your move must be larger than 3. Enter your move again"<<endl;
+                else if(s[i][j]!=' ') cout<<"Invalid move. This cell is not empty. Enter your move again"<<endl;
+                else break;
+            }
+            cout << "You play (" << i << ", " << j <<" )"<< endl;
         } else {
-            pair<int, int> move = getComputerPlay(s);
+            cout<<"Please wait. I'm thinking...."<<endl;
+            pair<int, int> move = getComputerMove(s);
             i = move.first;
             j = move.second;
             cout << "I play (" << i << ", " << j << ")" << endl;
